@@ -20,25 +20,6 @@ var stockSchema = mongoose.Schema ({
 
 var Stock = mongoose.model('Stock3', stockSchema);
 
-// open socket
-/*iosocket.sockets.on("connection", function (socket) {
-
-    mongoose.model('Stock1').collection.find({}, {
-        tailable: true,
-        awaitdata: true,
-        numberOfRetries: 300
-    }, function (err, cursor) {
-        if (err) {
-            return console.log(err)
-        }
-        cursor.each(function (err, doc) {
-            // do stuff to doc
-            console.log(doc.type);
-        })
-    });
-
-});*/
-
 
 
 
@@ -48,9 +29,41 @@ module.exports = function(io){
         socket.on('join', function(data) {
             console.log(data);
         });
+        var startConnectionDate = new Date();
 
 
-        mongoose.model('Stock3').collection.find({}, {
+
+        //Entrance date:
+        //Group by symbol and take max date
+        mongoose.model('Stock3').collection.aggregate([{$group : {_id : "$symbol",  max_date : {$max : "$date"}}}],
+            function (err, entranceData) {
+            if (err) {
+                return console.log(err)
+            }
+            console.log("Entrance data");
+            entranceData.forEach(function (doc) {
+                console.log(doc);
+                if (doc!=undefined){
+                    mongoose.model('Stock3').collection.find({"symbol" : doc._id, "date" : {$eq : doc.max_date}}, function (err, result) {
+                        if (err) {
+                            return console.log(err)
+                        }
+                        result.forEach(function (res) {
+                            if (res!=undefined){
+                                socket.emit('dbChange', res);
+                            }
+
+                        })
+                    });
+
+                }
+
+            });
+        })
+
+
+        //Tailable cousor only checks changes that take place after startConncationDate
+       mongoose.model('Stock3').collection.find({"date" : {$gt : startConnectionDate}}, {
             tailable: true,
             awaitdata: true,
             numberOfRetries: Number.MAX_VALUE
@@ -58,6 +71,7 @@ module.exports = function(io){
             if (err) {
                 return console.log(err)
             }
+            console.log(startConnectionDate);
             cursor.each(function (err, doc) {
                 console.log(doc);
                 // do stuff to doc
