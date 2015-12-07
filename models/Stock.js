@@ -3,6 +3,7 @@
  */
 "use strict";
 var mongoose = require('mongoose');
+var async = require ('async');
 
 
 var stockSchema = mongoose.Schema ({
@@ -10,7 +11,6 @@ var stockSchema = mongoose.Schema ({
     symbol: {type: String, required: true},
     price : {type: Number, required: true, min: 0},
     change : {type: Number, required: false},
-    perChange : {tyepe: Number, required: false},
     date : {type: Date, required : true, default: Date.now }
 
 }, { capped: 1024 });
@@ -18,10 +18,34 @@ var stockSchema = mongoose.Schema ({
 
 
 
+
+
+
+stockSchema.methods.setChangeValue = function setChangeValue (cb) {
+    var newPrice = this.price;
+    var stock = this;
+    mongoose.model('Stock3').findOne( {"symbol" : stock.symbol}).sort('-date').exec(function(err, doc) {
+        if(err){
+            console.log(err);
+            cb(err);
+            return;
+        }else{
+            if (doc!=undefined){
+                var oldPrice = doc.price;
+                stock.change=newPrice - oldPrice;
+            }
+
+            cb(null, stock);
+            return;
+        }
+
+    });
+
+
+
+};
+
 var Stock = mongoose.model('Stock3', stockSchema);
-
-
-
 
 module.exports = function(io){
     // open socket
@@ -41,24 +65,49 @@ module.exports = function(io){
                 return console.log(err)
             }
             console.log("Entrance data");
-            entranceData.forEach(function (doc) {
-                console.log(doc);
-                if (doc!=undefined){
-                    mongoose.model('Stock3').collection.find({"symbol" : doc._id, "date" : {$eq : doc.max_date}}, function (err, result) {
-                        if (err) {
-                            return console.log(err)
+
+            async.forEach(entranceData,
+                    function(doc, callback) {
+                        if (doc != undefined) {
+                            mongoose.model('Stock3').collection.find({
+                                "symbol": doc._id,
+                                "date": {$eq: doc.max_date}
+                            }, function (err, result) {
+                                if (err) {
+                                    callback(err);
+                                    return;
+                                }
+                                result.forEach(function (res) {
+                                    if (res != undefined) {
+                                        socket.emit('dbChange', res);
+                                    }
+
+                                })
+                            })
                         }
-                        result.forEach(function (res) {
-                            if (res!=undefined){
-                                socket.emit('dbChange', res);
-                            }
+                    },
+                function(err, cb){
 
-                        })
-                    });
+                });
 
-                }
+                            /*entranceData.forEach(function (doc) {
+                                console.log(doc);
+                                if (doc!=undefined){
+                                    mongoose.model('Stock3').collection.find({"symbol" : doc._id, "date" : {$eq : doc.max_date}}, function (err, result) {
+                                        if (err) {
+                                            return console.log(err)
+                                        }
+                                        result.forEach(function (res) {
+                                            if (res!=undefined){
+                                                socket.emit('dbChange', res);
+                                            }
 
-            });
+                                        })
+                                    });
+
+                                }
+
+                            });*/
         })
 
 
@@ -74,7 +123,6 @@ module.exports = function(io){
             console.log(startConnectionDate);
             cursor.each(function (err, doc) {
                 console.log(doc);
-                // do stuff to doc
                 if (doc!=undefined){
                     //console.log(doc);
                     socket.emit('dbChange', doc);
@@ -84,5 +132,8 @@ module.exports = function(io){
         });
 
     });
+
+
+
 
 };

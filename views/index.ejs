@@ -2,7 +2,6 @@
 <html>
 <head>
     <title><%= title %></title>
-    <!--<link rel='stylesheet' href='/stylesheets/style.css' />-->
     <link rel='stylesheet' href='/stylesheets/finacial_styles.css' />
 
 </head>
@@ -14,17 +13,13 @@
 
         <nav class="float-form">
             <div class="listContener">
-                <!--<div class="searchContainer">
-                    <input class="searchInput" type="text" placeholder="Search" ng-model="search.$"/>
-                </div>-->
                 <table class="rwd-table">
                     <thead>
                     <tr>
                         <th>Symbol</th>
                         <th>Price</th>
                         <th>Date</th>
-                        <th></th>
-                        <th></th>
+                        <th>Last change</th>
                     </tr>
                     </thead>
                     <tbody ng-if="stocks.length>0">
@@ -32,6 +27,8 @@
                         <td>{{::stock.symbol | uppercase}}</td>
                         <td>{{::stock.price}}</td>
                         <td>{{::stock.date | date: 'short'}} </td>
+                        <td ng-style="stock.change >= 0 ? { color:'#709a0e'} :  {color:'red'} " style="font-weight: bold">
+                            {{stock.change > 0 ? '+' : ''}}{{::stock.change}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -50,21 +47,6 @@
     <script src="/javascripts/app.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        /*var socket = io.connect('http://localhost:3000');
-        socket.on('connect', function(data){
-            socket.emit('join', 'Hello from client');
-        });*/
-        /*socket.on('message', function(message) {
-            alert('The server has a message for you: ' + message);
-
-        })*/
-        /*socket.on('dbChange', function (data) {
-            // convert the json string into a valid javascript object
-
-            alert(data.symbol);
-            //$('#container').html(_data.symbol);
-            //$('time').html('Last Update:' + new Date());
-        });*/
     </script>
 </body>
 </html>

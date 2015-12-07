@@ -77,23 +77,29 @@ router.post('/', function(req, res, next){
     if (stocksRequest.length != undefined){
         var savedStock = [];
         var noSavedStock = [];
-        async.concat(stocksRequest,
+        async.forEach(stocksRequest,
             function(elemento, callback){
                 var stock = new Stock(elemento);
-                console.log("Start stock save " + stock);
-                stock.save(function(err, result){
-                    if(err){
-                        var error = {
-                            "symbol" : stock.symbol,
-                            "price" : stock.price,
-                            "error" : err
-                        }
-                        noSavedStock.push(error)
-                    }else {
-                        savedStock.push(result);
+                stock.symbol=stock.symbol.toLowerCase();
+                stock.setChangeValue(function (err, result){
+                    if (err){
+                        var error = { "symbol" : stock.symbol, "price" : stock.price, "error" : err }
+                        noSavedStock.push(error);
+                    }else{
+                        stock.save(function(err, result){
+                            if(err){
+                                var error = { "symbol" : stock.symbol, "price" : stock.price, "error" : err }
+                                noSavedStock.push(error);
+                            }else {
+                                savedStock.push(result);
+                            }
+                            return callback();
+                        });
+
                     }
-                    return callback();
-                });
+
+                    });
+
             },
             function(){
                 if (noSavedStock.length>0) {
@@ -114,16 +120,28 @@ router.post('/', function(req, res, next){
     else{
         var stock = new Stock(stocksRequest);
         console.log(stock);
-        stock.save(function(err, result){
-            if(err){
-                console.log(err);
+        stock.symbol=stock.symbol.toLowerCase();
+        stock.setChangeValue(function (err, result){
+            if (err){
                 res.status(400).json({ok:false, error:err});
                 return;
             }
-            //if success:
-            res.status(200).json({ok:true, stocksSaved:result});
-            return;
-        });
+            console.log(result);
+            result.save(function(err, result){
+                if(err){
+                    console.log(err);
+                    res.status(400).json({ok:false, error:err});
+                    return;
+                }
+                //if success:
+                res.status(200).json({ok:true, stocksSaved:result});
+                return;
+            });
+
+
+        })
+
+
 
     }
 

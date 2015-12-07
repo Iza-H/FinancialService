@@ -15,7 +15,7 @@ app.set('port', process.env.PORT || 3000);
 var server = app.listen(app.get('port'));
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
-  console.log('A socket connected!');
+  console.log('Socket connected!');
 
 });
 
@@ -40,9 +40,15 @@ app.use('/', require('./routes/index'));
 //Connect to the DB:
 require('./lib/db');
 
+//Set schedule
+require('./models/Users.js');
+require('./lib/schedule');
 
 require('./models/Stock.js')(io);
 app.use('/apiv1/stock', require('./routes/apiv1/stock'));
+
+
+app.use('/apiv1/users', require('./routes/apiv1/user'));
 
 
 
