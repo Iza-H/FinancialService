@@ -23,8 +23,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -39,8 +37,12 @@ app.use('/', require('./routes/index'));
 //Connect to the DB:
 require('./lib/db');
 
+
+//Models:
 require('./models/Users.js');
 require('./models/Stock.js')(io);
+
+
 //Set schedule:
 //it has to be below models
 require('./lib/schedule');
@@ -68,10 +70,6 @@ if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     return res.status(err.status ).json({ok:false, error : err.message });
-    //res.render('error', {
-    //  message: err.message,
-    //  error: err
-    //});
   });
 }
 
@@ -80,13 +78,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   return res.status(err.status ).json({ok:false, error : err.message });
-  //res.render('error', {
-  //  message: err.message,
-  //  error: {}
-  //});
 });
-
-
 
 
 
