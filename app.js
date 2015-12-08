@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 
-//var jwt = requiere('jsonwebtoken');
 
 var app = express();
 
@@ -40,14 +39,14 @@ app.use('/', require('./routes/index'));
 //Connect to the DB:
 require('./lib/db');
 
-//Set schedule
 require('./models/Users.js');
+require('./models/Stock.js')(io);
+//Set schedule:
+//it has to be below models
 require('./lib/schedule');
 
-require('./models/Stock.js')(io);
+//Routes
 app.use('/apiv1/stock', require('./routes/apiv1/stock'));
-
-
 app.use('/apiv1/users', require('./routes/apiv1/user'));
 
 

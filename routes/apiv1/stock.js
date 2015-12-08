@@ -6,7 +6,7 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require('mongoose');
-var Stock = mongoose.model('Stock3');
+var Stock = mongoose.model('Stock');
 var async = require ('async');
 
 router.get('/', function(req, res){
@@ -71,7 +71,7 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res, next){
     console.log("Run POST stocks");
-    
+
 
     var stocksRequest = req.body;
 

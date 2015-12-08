@@ -24,7 +24,7 @@ var stockSchema = mongoose.Schema ({
 stockSchema.methods.setChangeValue = function setChangeValue (cb) {
     var newPrice = this.price;
     var stock = this;
-    mongoose.model('Stock3').findOne( {"symbol" : stock.symbol}).sort('-date').exec(function(err, doc) {
+    mongoose.model('Stock').findOne( {"symbol" : stock.symbol}).sort('-date').exec(function(err, doc) {
         if(err){
             console.log(err);
             cb(err);
@@ -45,7 +45,7 @@ stockSchema.methods.setChangeValue = function setChangeValue (cb) {
 
 };
 
-var Stock = mongoose.model('Stock3', stockSchema);
+var Stock = mongoose.model('Stock', stockSchema);
 
 module.exports = function(io){
     // open socket
@@ -59,7 +59,7 @@ module.exports = function(io){
 
         //Entrance date:
         //Group by symbol and take max date
-        mongoose.model('Stock3').collection.aggregate([{$group : {_id : "$symbol",  max_date : {$max : "$date"}}}],
+        mongoose.model('Stock').collection.aggregate([{$group : {_id : "$symbol",  max_date : {$max : "$date"}}}],
             function (err, entranceData) {
             if (err) {
                 return console.log(err)
@@ -69,7 +69,7 @@ module.exports = function(io){
             async.forEach(entranceData,
                     function(doc, callback) {
                         if (doc != undefined) {
-                            mongoose.model('Stock3').collection.find({
+                            mongoose.model('Stock').collection.find({
                                 "symbol": doc._id,
                                 "date": {$eq: doc.max_date}
                             }, function (err, result) {
@@ -90,29 +90,12 @@ module.exports = function(io){
 
                 });
 
-                            /*entranceData.forEach(function (doc) {
-                                console.log(doc);
-                                if (doc!=undefined){
-                                    mongoose.model('Stock3').collection.find({"symbol" : doc._id, "date" : {$eq : doc.max_date}}, function (err, result) {
-                                        if (err) {
-                                            return console.log(err)
-                                        }
-                                        result.forEach(function (res) {
-                                            if (res!=undefined){
-                                                socket.emit('dbChange', res);
-                                            }
 
-                                        })
-                                    });
-
-                                }
-
-                            });*/
         })
 
 
         //Tailable cousor only checks changes that take place after startConncationDate
-       mongoose.model('Stock3').collection.find({"date" : {$gt : startConnectionDate}}, {
+       mongoose.model('Stock').collection.find({"date" : {$gt : startConnectionDate}}, {
             tailable: true,
             awaitdata: true,
             numberOfRetries: Number.MAX_VALUE

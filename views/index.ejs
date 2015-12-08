@@ -27,8 +27,8 @@
                         <td>{{::stock.symbol | uppercase}}</td>
                         <td>{{::stock.price}}</td>
                         <td>{{::stock.date | date: 'short'}} </td>
-                        <td ng-style="stock.change >= 0 ? { color:'#709a0e'} :  {color:'red'} " style="font-weight: bold">
-                            {{stock.change > 0 ? '+' : ''}}{{::stock.change}}</td>
+                        <td ng-style="stock.change > 0 ? { color:'#709a0e'} :  {color:'red'} " style="font-weight: bold">
+                            {{stock.change > 0 ? '+' : ''}}{{::stock.change || "0"}}</td>
                     </tr>
                     </tbody>
                 </table>
