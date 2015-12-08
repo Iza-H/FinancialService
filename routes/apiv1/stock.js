@@ -71,6 +71,7 @@ router.get('/', function(req, res){
 
 router.post('/', function(req, res, next){
     console.log("Run POST stocks");
+    
 
     var stocksRequest = req.body;
 
