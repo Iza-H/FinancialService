@@ -10,7 +10,7 @@ RealTime project done in Nodejs, AngularJS, Express, MongoDB, Mongoose, Websocke
 
 ##DEMOS:
 1. Saving data in the MongoDB, which was sent using POST method, and automatic update of the website:
-2. 
+
 Sent data in the example:
 
 step 1: symbol "ELE" price 0 , "REE" price 40
