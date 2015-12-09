@@ -50,7 +50,6 @@ step 2: symbol "A01" with price 422 , "A02" price 488
 III. Adding data directly to the MongoDB and automatic update of the website:
 
 ```
-
 Sent data in the example:
 
 step 1: symbol "BBB" with price 123
