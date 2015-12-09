@@ -11,7 +11,7 @@ RealTime project done in Nodejs, AngularJS, Express, MongoDB, Mongoose, Websocke
 ##DEMOS:
 I. Saving data in the MongoDB, which was sent using POST method, and automatic update of the website:
 
-'''
+```
 Sent data in the example:
 
 step 1: symbol "ELE" price 0 , "REE" price 40
@@ -24,7 +24,7 @@ step 4: symbol "SOME_NEW" price 4545
 
 step 5: symbol "AAA" price 4545, symbol "SOME_NEW" price 14545
 
-'''
+```
 
 
 
@@ -35,13 +35,13 @@ step 5: symbol "AAA" price 4545, symbol "SOME_NEW" price 14545
 
 II. Saving data in the MongoDB, which was sent using POST method, and automatic update of the website, but this time the example shows a responsive behaviour of the website:
 
-'''
+```
 Sent data in the example:
 
 step 1: symbol "A01" with price 4
 
 step 2: symbol "A01" with price 422 , "A02" price 488
-'''
+```
 
 
 
@@ -49,14 +49,14 @@ step 2: symbol "A01" with price 422 , "A02" price 488
 
 III. Adding data directly to the MongoDB and automatic update of the website:
 
-'''
+```
 
 Sent data in the example:
 
 step 1: symbol "BBB" with price 123
 
 step 2: symbol "BCCCC" price 12123
-'''
+```
 
 
 
